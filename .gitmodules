@@ -7,3 +7,6 @@
 [submodule "deps/glfw"]
 	path = deps/glfw
 	url = https://github.com/glfw/glfw.git
+[submodule "deps/bgfx.cmake"]
+	path = deps/bgfx.cmake
+	url = https://github.com/fredakilla/bgfx.cmake.git
