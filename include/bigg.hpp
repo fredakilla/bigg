@@ -55,7 +55,10 @@ namespace bigg
 		static void dropCallback( GLFWwindow* window, int count, const char** paths );
 
 		void imguiEvents( float dt );
-	public:
+        void toggleStats();
+        void toggleVsync();
+
+    public:
 		Application();
 
 		int run(
@@ -94,5 +97,6 @@ namespace bigg
 		uint32_t mHeight;
 		bool  mMousePressed[ 3 ];
 		float mMouseWheel;
-	};
+        uint32_t mDebugFlag;
+    };
 }

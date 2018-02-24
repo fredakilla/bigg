@@ -175,6 +175,26 @@ glm::tmat4x4<float, glm::defaultp> bigg::ortho( float left, float right, float b
 
 // application
 
+void bigg::Application::toggleStats()
+{
+    if ((mDebugFlag & BGFX_DEBUG_STATS) == 0)
+        mDebugFlag |= BGFX_DEBUG_STATS;
+    else
+        mDebugFlag &= ~BGFX_DEBUG_STATS;
+
+    bgfx::setDebug(mDebugFlag);
+}
+
+void bigg::Application::toggleVsync()
+{
+    if ((mReset & BGFX_RESET_VSYNC) == 0)
+        mReset |= BGFX_RESET_VSYNC;
+    else
+        mReset &= ~BGFX_RESET_VSYNC;
+
+    bgfx::reset(mWidth, mHeight, mReset);
+}
+
 void bigg::Application::keyCallback( GLFWwindow* window, int key, int scancode, int action, int mods )
 {
 	bigg::Application* app = ( bigg::Application* )glfwGetWindowUserPointer( window );
@@ -193,7 +213,12 @@ void bigg::Application::keyCallback( GLFWwindow* window, int key, int scancode, 
 	io.KeySuper = io.KeysDown[ GLFW_KEY_LEFT_SUPER ] || io.KeysDown[ GLFW_KEY_RIGHT_SUPER ];
 	if ( !io.WantCaptureKeyboard )
 	{
-		app->onKey( key, scancode, action, mods );
+        app->onKey( key, scancode, action, mods );
+
+        if (key == GLFW_KEY_F1 && action == GLFW_PRESS)
+            app->toggleStats();
+        if (key == GLFW_KEY_F7 && action == GLFW_PRESS)
+            app->toggleVsync();
 	}
 }
 
