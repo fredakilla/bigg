@@ -68,7 +68,7 @@ class ExampleTexturedQuad : public bigg::Application
         bgfx::setVertexBuffer(0, _vbh);
         bgfx::setTexture(0, _texUniform, _texHandle);
 
-        uint32_t state = 0
+        uint64_t state = 0
                 | BGFX_STATE_WRITE_RGB
                 | BGFX_STATE_WRITE_A
                 | BGFX_STATE_WRITE_Z
