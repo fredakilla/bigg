@@ -72,11 +72,11 @@ namespace bigg
 		uint32_t getWidth();
 		uint32_t getHeight();
 
-		virtual void initialize( int _argc, char** _argv ) {};
-		virtual void update( float dt ) {};
-		virtual int shutdown() { return 0; };
+        virtual void initialize( int _argc, char** _argv ) {}
+        virtual void update( float dt ) {}
+        virtual int shutdown() { return 0; }
 
-		virtual void onReset() {};
+        virtual void onReset() {}
 		virtual void onKey( int key, int scancode, int action, int mods ) {}
 		virtual void onChar( unsigned int codepoint ) {}
 		virtual void onCharMods( int codepoint, unsigned int mods ) {}
