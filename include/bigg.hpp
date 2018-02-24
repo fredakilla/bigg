@@ -14,9 +14,11 @@
 namespace bigg
 {
 	// bgfx utils
+    void* load(const char* filename, size_t* size);
 	const bgfx::Memory* loadMemory( const char* filename );
 	bgfx::ShaderHandle loadShader( const char* shader );
 	bgfx::ProgramHandle loadProgram( const char* vsName, const char* fsName );
+    bgfx::TextureHandle loadTexture(const char* filePath, uint32_t flags = 0);
 
 	// glm utils
 	glm::tmat4x4<float, glm::defaultp> perspective( float fovy, float aspect, float zNear, float zFar );

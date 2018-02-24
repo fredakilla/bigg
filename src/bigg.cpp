@@ -18,11 +18,110 @@
 #include <glm/glm.hpp>
 #include <fstream>
 
+#include <bimg/decode.h>
+
 #include "bigg_assets.h"
 #include "bigg_shaders.hpp"
 #include "bigg_imgui.hpp"
 
 // bgfx utils
+
+bx::AllocatorI* getDefaultAllocator()
+{
+    static bx::DefaultAllocator s_allocator;
+    return &s_allocator;
+}
+
+void* bigg::load(const char* filename, size_t* size)
+{
+    std::ifstream file(filename, std::ios::binary | std::ios::ate);
+    std::streamsize streamSize = file.tellg();
+    file.seekg(0, std::ios::beg);
+
+    if(streamSize > 0)
+    {
+        char* buffer = new char[streamSize];
+        if(file.read(buffer, streamSize))
+        {
+            *size = streamSize;
+            return buffer;
+        }
+    }
+    return nullptr;
+}
+
+static void imageReleaseCb(void* _ptr, void* _userData)
+{
+    BX_UNUSED(_ptr);
+    bimg::ImageContainer* imageContainer = (bimg::ImageContainer*)_userData;
+    bimg::imageFree(imageContainer);
+}
+
+bgfx::TextureHandle bigg::loadTexture(const char* filePath, uint32_t flags)
+{
+    size_t size = 0;
+    void* data = load(filePath, &size);
+    if(data != nullptr && size > 0)
+    {
+        Allocator alloc;
+        bimg::ImageContainer* imageContainer = bimg::imageParse(getDefaultAllocator(), data, size);
+
+        bgfx::TextureHandle handle = BGFX_INVALID_HANDLE;
+
+        if (NULL != imageContainer)
+        {
+            const bgfx::Memory* mem = bgfx::makeRef(
+                      imageContainer->m_data
+                    , imageContainer->m_size
+                    , imageReleaseCb
+                    , imageContainer
+                    );
+            delete[] (char*)data;
+
+            if (imageContainer->m_cubeMap)
+            {
+                handle = bgfx::createTextureCube(
+                      uint16_t(imageContainer->m_width)
+                    , 1 < imageContainer->m_numMips
+                    , imageContainer->m_numLayers
+                    , bgfx::TextureFormat::Enum(imageContainer->m_format)
+                    , flags
+                    , mem
+                    );
+            }
+            else if (1 < imageContainer->m_depth)
+            {
+                handle = bgfx::createTexture3D(
+                      uint16_t(imageContainer->m_width)
+                    , uint16_t(imageContainer->m_height)
+                    , uint16_t(imageContainer->m_depth)
+                    , 1 < imageContainer->m_numMips
+                    , bgfx::TextureFormat::Enum(imageContainer->m_format)
+                    , flags
+                    , mem
+                    );
+            }
+            else
+            {
+                handle = bgfx::createTexture2D(
+                      uint16_t(imageContainer->m_width)
+                    , uint16_t(imageContainer->m_height)
+                    , 1 < imageContainer->m_numMips
+                    , imageContainer->m_numLayers
+                    , bgfx::TextureFormat::Enum(imageContainer->m_format)
+                    , flags
+                    , mem
+                    );
+            }
+
+            bgfx::setName(handle, filePath);
+
+            return handle;
+        }
+    }
+
+    return BGFX_INVALID_HANDLE;
+}
 
 const bgfx::Memory* bigg::loadMemory( const char* filename )
 {
@@ -249,7 +348,7 @@ int bigg::Application::run( int argc, char** argv, bgfx::RendererType::Enum type
 	imguiInit();
 
 	// Initialize the application
-	reset();
+    reset();
 	initialize( argc, argv );
 
 	// Loop until the user closes the window
