@@ -373,7 +373,7 @@ int bigg::Application::run( int argc, char** argv, bgfx::RendererType::Enum type
 	imguiInit();
 
 	// Initialize the application
-    reset();
+    reset(BGFX_RESET_VSYNC);
 	initialize( argc, argv );
 
 	// Loop until the user closes the window
