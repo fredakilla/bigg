@@ -26,12 +26,11 @@ bgfx::VertexDecl PCT_Vertex::ms_decl;
 
 static PCT_Vertex s_quadVertices[] =
 {
-    {-1.0f,  1.0f,  0.0f, 0xffffffff, 0,0 },    // top left
-    { 1.0f, -1.0f,  0.0f, 0xffffffff, 1,1 },    // bottom right
+    // triangle strip
     {-1.0f, -1.0f,  0.0f, 0xffffffff, 0,1 },    // bottom left
     {-1.0f,  1.0f,  0.0f, 0xffffffff, 0,0 },    // top left
-    { 1.0f,  1.0f,  0.0f, 0xffffffff, 1,0 },    // top right
     { 1.0f, -1.0f,  0.0f, 0xffffffff, 1,1 },    // bottom right
+    { 1.0f,  1.0f,  0.0f, 0xffffffff, 1,0 },    // top right
 };
 
 class ExampleTexturedQuad : public bigg::Application
@@ -74,7 +73,8 @@ class ExampleTexturedQuad : public bigg::Application
                 | BGFX_STATE_WRITE_Z
                 | BGFX_STATE_DEPTH_TEST_LESS
                 | BGFX_STATE_CULL_CW
-                | BGFX_STATE_MSAA;
+                | BGFX_STATE_MSAA
+                | BGFX_STATE_PT_TRISTRIP;
         bgfx::setState(state);
 
         bgfx::submit(0, _program);
