@@ -97,7 +97,7 @@ class ExampleTexturedQuad : public bigg::Application
             bgfx::setTransform(&mtx);
 
             bgfx::setVertexBuffer(0, _vbh);
-            bgfx::setTexture(0, _texUniform2, _texHandle);
+            bgfx::setTexture(0, _texUniform, _texHandle);
 
             uint64_t state = 0
                     | BGFX_STATE_WRITE_RGB
@@ -108,7 +108,7 @@ class ExampleTexturedQuad : public bigg::Application
                     | BGFX_STATE_MSAA
                     | BGFX_STATE_PT_TRISTRIP;
             bgfx::setState(state);
-            bgfx::submit(viewRT, _programFx);
+            bgfx::submit(viewRT, _program);
         }
 
         // render int main view
@@ -128,7 +128,7 @@ class ExampleTexturedQuad : public bigg::Application
             bgfx::setTransform(&mtx);
 
             bgfx::setVertexBuffer(0, _vbh);
-            bgfx::setTexture(0, _texUniform, bgfx::getTexture(m_gbuffer) );
+            bgfx::setTexture(0, _texUniform2, bgfx::getTexture(m_gbuffer) );
 
             uint64_t state = 0
                     | BGFX_STATE_WRITE_RGB
@@ -139,7 +139,7 @@ class ExampleTexturedQuad : public bigg::Application
                     | BGFX_STATE_MSAA
                     | BGFX_STATE_PT_TRISTRIP;
             bgfx::setState(state);
-            bgfx::submit(viewFinal, _program);
+            bgfx::submit(viewFinal, _programFx);
         }
 	}
 
