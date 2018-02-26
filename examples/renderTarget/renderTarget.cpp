@@ -38,25 +38,27 @@ class ExampleTexturedQuad : public bigg::Application
 {
 	void initialize( int _argc, char** _argv )
     {
-
-        // Create frame buffer and renderTarget
+        // Create renderTarget and framebuffer
         uint16_t width = 256;
         uint16_t height = 256;
-
         bgfx::TextureHandle fbTextures[2];
         fbTextures[0] = bgfx::createTexture2D(width, height, false, 1, bgfx::TextureFormat::BGRA8, BGFX_TEXTURE_RT);
         fbTextures[1] = bgfx::createTexture2D(width, height, false, 1, bgfx::TextureFormat::D24,  BGFX_TEXTURE_RT );
-
         m_gbuffer = bgfx::createFrameBuffer(BX_COUNTOF(fbTextures), fbTextures, true);
 
 
         _texHandle = bigg::loadTexture("smiley.jpg");
         _texUniform = bgfx::createUniform("s_texColor", bgfx::UniformType::Int1);
+        _program = bigg::loadProgram( "shaders/glsl/vs_textured.bin", "shaders/glsl/fs_textured.bin" );
+        assert(bgfx::isValid(_program));
+
+        _texUniform2 = bgfx::createUniform("u_texture", bgfx::UniformType::Int1);
+        _programFx = bigg::loadProgram( "shaders/glsl/vs_textured.bin", "shaders/glsl/fx_pixelate.bin" );
+        assert(bgfx::isValid(_programFx));
 
         PCT_Vertex::init();
-        _program = bigg::loadProgram( "shaders/glsl/vs_textured.bin", "shaders/glsl/fs_textured.bin" );
         _vbh = bgfx::createVertexBuffer(bgfx::makeRef(s_quadVertices, sizeof(s_quadVertices)), PCT_Vertex::ms_decl );
-        bgfx::setDebug(BGFX_DEBUG_TEXT);
+
         _time = 0.0f;
 	}
 
@@ -95,7 +97,7 @@ class ExampleTexturedQuad : public bigg::Application
             bgfx::setTransform(&mtx);
 
             bgfx::setVertexBuffer(0, _vbh);
-            bgfx::setTexture(0, _texUniform, _texHandle);
+            bgfx::setTexture(0, _texUniform2, _texHandle);
 
             uint64_t state = 0
                     | BGFX_STATE_WRITE_RGB
@@ -106,7 +108,7 @@ class ExampleTexturedQuad : public bigg::Application
                     | BGFX_STATE_MSAA
                     | BGFX_STATE_PT_TRISTRIP;
             bgfx::setState(state);
-            bgfx::submit(viewRT, _program);
+            bgfx::submit(viewRT, _programFx);
         }
 
         // render int main view
@@ -139,17 +141,21 @@ class ExampleTexturedQuad : public bigg::Application
             bgfx::setState(state);
             bgfx::submit(viewFinal, _program);
         }
-
 	}
 
 private:
-    bgfx::ProgramHandle _program;
+
+    float _time;
     bgfx::VertexBufferHandle _vbh;
+
+    bgfx::ProgramHandle _program;
     bgfx::TextureHandle _texHandle;
     bgfx::UniformHandle _texUniform;
-    float _time;
 
     bgfx::FrameBufferHandle m_gbuffer;
+    bgfx::ProgramHandle _programFx;
+    bgfx::TextureHandle _texHandle2;
+    bgfx::UniformHandle _texUniform2;
 };
 
 int main( int argc, char** argv )
