@@ -12,7 +12,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/euler_angles.hpp> 
 
-#include <shaderc.h>
+#include <brtshaderc.h>
 
 struct PosColorVertex
 {
@@ -50,11 +50,23 @@ class RuntimeShader : public bigg::Application
 	void initialize( int _argc, char** _argv )
 	{
         // test
-        bgfx::ShaderHandle vsh = bgfx::compileShader(BRTSHADERC_TYPE_VERTEX, "shaders/glsl/vs_cubes.sc");
-        bgfx::ShaderHandle fsh = bgfx::compileShader(BRTSHADERC_TYPE_FRAGMENT, "shaders/glsl/fs_cubes.sc");
+        //bgfx::ShaderHandle vsh = bgfx::compileShader(BRTSHADERC_TYPE_VERTEX, "shaders/glsl/vs_cubes.sc");
+        //bgfx::ShaderHandle fsh = bgfx::compileShader(BRTSHADERC_TYPE_FRAGMENT, "shaders/glsl/fs_cubes.sc");
+        //assert(bgfx::isValid(vsh));
+        //assert(bgfx::isValid(fsh));
+        //mProgram = bgfx::createProgram(vsh, fsh, true);
+
+        const bgfx::Memory* memVsh =  bgfx::compileShader(SC_TYPE_VERTEX, "shaders/glsl/vs_cubes.sc");
+        bgfx::ShaderHandle vsh = bgfx::createShader(memVsh);
         assert(bgfx::isValid(vsh));
+
+        const bgfx::Memory* memFsh =  bgfx::compileShader(SC_TYPE_FRAGMENT, "shaders/glsl/fs_cubes.sc");
+        bgfx::ShaderHandle fsh = bgfx::createShader(memFsh);
         assert(bgfx::isValid(fsh));
-        mProgram = bgfx::createProgram(vsh, fsh, false);
+
+        mProgram = bgfx::createProgram(vsh, fsh, true);
+
+
 
 
 		PosColorVertex::init();
