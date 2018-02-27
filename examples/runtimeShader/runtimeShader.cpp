@@ -51,11 +51,11 @@ class RuntimeShader : public bigg::Application
 	{
         //  brtshaderc test to compile shaders at runtime from sources.
 
-        const bgfx::Memory* memVsh =  shaderc::compileShader(shaderc::ST_VERTEX, "shaders/glsl/vs_cubes.sc");
+        const bgfx::Memory* memVsh =  shaderc::compileShader(shaderc::ST_VERTEX, "vs_cubes.sc");
         bgfx::ShaderHandle vsh = bgfx::createShader(memVsh);
         assert(bgfx::isValid(vsh));
 
-        const bgfx::Memory* memFsh =  shaderc::compileShader(shaderc::ST_FRAGMENT, "shaders/glsl/fs_cubes.sc");
+        const bgfx::Memory* memFsh =  shaderc::compileShader(shaderc::ST_FRAGMENT, "fs_cubes.sc");
         bgfx::ShaderHandle fsh = bgfx::createShader(memFsh);
         assert(bgfx::isValid(fsh));
 

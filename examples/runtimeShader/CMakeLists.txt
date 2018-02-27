@@ -1,12 +1,13 @@
-add_executable( runtimeShader runtimeShader.cpp fs_cubes.sc vs_cubes.sc )
+add_executable( runtimeShader runtimeShader.cpp vs_cubes.sc fs_cubes.sc varying.def.sc)
 target_link_libraries( runtimeShader bigg )
 set_target_properties( runtimeShader PROPERTIES FOLDER "examples" )
 
-add_shader( vs_cubes.sc VERTEX   OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/shaders DX11_MODEL 5_0 GLSL 130 )
-add_shader( fs_cubes.sc FRAGMENT OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/shaders DX11_MODEL 5_0 GLSL 130 )
+# copy shaders src to build dir
+add_shader_src(vs_cubes.sc)
+add_shader_src(fs_cubes.sc)
+add_shader_src(varying.def.sc)
 
-
-add_resource(vs_cubes.sc)
-add_resource(fs_cubes.sc)
+# copy 'common' folder to build dir
+file(COPY common DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 configure_debugging( runtimeShader WORKING_DIR ${CMAKE_CURRENT_BINARY_DIR} )
