@@ -59,6 +59,9 @@ class ExampleTexturedQuad : public bigg::Application
         PCT_Vertex::init();
         _vbh = bgfx::createVertexBuffer(bgfx::makeRef(s_quadVertices, sizeof(s_quadVertices)), PCT_Vertex::ms_decl );
 
+
+        _uniformPixelate = bgfx::createUniform("u_pixelate", bgfx::UniformType::Vec4);
+
         _time = 0.0f;
 	}
 
@@ -74,6 +77,15 @@ class ExampleTexturedQuad : public bigg::Application
 	void update( float dt )
 	{
         _time += dt;
+
+
+        static float guiPixelateValue = 64.0f;
+
+        ImGui::Begin("Controls");
+        ImGui::SliderFloat("Pixelate", &guiPixelateValue, 12.0f, 128.0f);
+        ImGui::End();
+
+
 
         bgfx::ViewId viewRT = 1;
         bgfx::ViewId viewFinal = 0;
@@ -111,7 +123,7 @@ class ExampleTexturedQuad : public bigg::Application
             bgfx::submit(viewRT, _program);
         }
 
-        // render int main view
+        // render in main view
         {
             uint16_t viewWidth = getWidth();
             uint16_t viewHeight = getHeight();
@@ -124,11 +136,14 @@ class ExampleTexturedQuad : public bigg::Application
             bgfx::touch(viewFinal);
 
             glm::mat4 mtx;
-            mtx = glm::yawPitchRoll( _time * 0.21f, _time  * 0.37f, 0.0f );
+            mtx = glm::yawPitchRoll(0.21f, 0.37f, 0.0f);
             bgfx::setTransform(&mtx);
 
             bgfx::setVertexBuffer(0, _vbh);
             bgfx::setTexture(0, _texUniform2, bgfx::getTexture(m_gbuffer) );
+
+            glm::vec4 pixelate = glm::vec4(guiPixelateValue, 0.0f, 0.0f, 0.0f);
+            bgfx::setUniform(_uniformPixelate, &pixelate.data);
 
             uint64_t state = 0
                     | BGFX_STATE_WRITE_RGB
@@ -156,6 +171,8 @@ private:
     bgfx::ProgramHandle _programFx;
     bgfx::TextureHandle _texHandle2;
     bgfx::UniformHandle _texUniform2;
+
+    bgfx::UniformHandle _uniformPixelate;
 };
 
 int main( int argc, char** argv )
