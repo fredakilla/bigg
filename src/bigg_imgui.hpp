@@ -41,7 +41,7 @@ static void imguiInit()
 	imguiProgram = bgfx::createProgram( vs, fs, true );
 
 	// Setup render callback
-	io.RenderDrawListsFn = imguiRender;
+    //io.RenderDrawListsFn = imguiRender;
 
 	// Key mapping
 	io.KeyMap[ ImGuiKey_Tab ] = GLFW_KEY_TAB;
@@ -63,18 +63,34 @@ static void imguiInit()
 	io.KeyMap[ ImGuiKey_X ] = GLFW_KEY_X;
 	io.KeyMap[ ImGuiKey_Y ] = GLFW_KEY_Y;
 	io.KeyMap[ ImGuiKey_Z ] = GLFW_KEY_Z;
-	io.SetClipboardTextFn = imguiSetClipboardText;
-	io.GetClipboardTextFn = imguiGetClipboardText;
+    io.SetClipboardTextFn = imguiSetClipboardText;
+    io.GetClipboardTextFn = imguiGetClipboardText;
 }
 
 static void imguiReset( uint16_t width, uint16_t height )
 {
-	bgfx::setViewRect( 200, 0, 0, width, height );
-	bgfx::setViewClear( 0, BGFX_CLEAR_COLOR, 0x00000000 );
+    //bgfx::setViewRect( 200, 0, 0, width, height );
+    //bgfx::setViewClear( 200, 0, 0x00000000 );
 }
 
 static void imguiRender( ImDrawData* drawData )
 {
+    const bgfx::ViewId viewId = 255;
+
+    const ImGuiIO& io = ImGui::GetIO();
+    const float width  = io.DisplaySize.x;
+    const float height = io.DisplaySize.y;
+
+    bgfx::setViewName(viewId, "ImGui");
+    bgfx::setViewMode(viewId, bgfx::ViewMode::Sequential);
+
+    const bgfx::Caps* caps = bgfx::getCaps();
+    float ortho[16];
+    bx::mtxOrtho(ortho, 0.0f, width, height, 0.0f, 0.0f, 1000.0f, 0.0f, caps->homogeneousDepth);
+    bgfx::setViewTransform(viewId, NULL, ortho);
+    bgfx::setViewRect(viewId, 0, 0, uint16_t(width), uint16_t(height) );
+
+
 	for ( int ii = 0, num = drawData->CmdListsCount; ii < num; ++ii )
 	{
 		bgfx::TransientVertexBuffer tvb;
@@ -126,7 +142,7 @@ static void imguiRender( ImDrawData* drawData )
 				bgfx::setTexture( 0, imguiFontUniform, th );
 				bgfx::setVertexBuffer( 0, &tvb, 0, numVertices );
 				bgfx::setIndexBuffer( &tib, offset, cmd->ElemCount );
-				bgfx::submit( 200, imguiProgram );
+                bgfx::submit( viewId, imguiProgram );
 			}
 
 			offset += cmd->ElemCount;
